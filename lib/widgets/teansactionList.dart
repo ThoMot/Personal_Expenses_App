@@ -5,17 +5,20 @@ import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final Function deleteTx;
 
-  TransactionList(this.transactions);
+  TransactionList(this.transactions, this.deleteTx);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 450,
       child: transactions.isEmpty
           ? Column(children: <Widget>[
               Text("No transactions added yet"),
-              SizedBox(height: 50,),
+              SizedBox(
+                height: 50,
+              ),
               Container(
                 height: 200,
                 child: Image.asset(
@@ -25,50 +28,31 @@ class TransactionList extends StatelessWidget {
               )
             ])
           : ListView.builder(
+              itemCount: transactions.length,
               itemBuilder: (ctx, index) {
                 return Card(
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Theme.of(context).primaryColor,
-                                width: 2,
-                              ),
-                              color: Theme.of(context).accentColor),
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 15),
-                          child: Text(
-                            "\$ ${transactions[index].amount.toStringAsFixed(2)}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.black),
-                          )),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            transactions[index].title,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            DateFormat('yyyy/mm/dd')
-                                .format(transactions[index].time),
-                            style: TextStyle(color: Colors.grey),
-                          )
-                        ],
-                      ),
-                    ],
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  child: ListTile(
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () {
+                        deleteTx(transactions[index].id);
+                      },
+                    ),
+                    title: Text(transactions[index].title),
+                    subtitle: Text(
+                        DateFormat.yMMMd().format(transactions[index].time)),
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                          padding: EdgeInsets.all(6),
+                          child: FittedBox(
+                              child: Text("\$${transactions[index].amount}"))),
+                    ),
                   ),
                 );
               },
-              itemCount: transactions.length,
             ),
     );
   }
